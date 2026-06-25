@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* Neural Aurora Theme System */
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-elevated: #F1F5F9;
+  --primary: #7C3AED;
+  --primary-glow: rgba(124, 58, 237, 0.08);
+  --secondary: #0891B2;
+  --secondary-glow: rgba(8, 145, 178, 0.08);
+  --main-text: #0F172A;
+  --secondary-text: #334155;
+  --muted-text: #64748B;
+  --border-default: #E2E8F0;
+  --accent: #8B5CF6;
+  --glow-opacity: 0.15;
+  --neon-glow: rgba(124, 58, 237, 0.03);
+}
+
+.dark {
+  --background: #09090B;
+  --foreground: #F8FAFC;
+  --card: #18181B;
+  --card-elevated: #27272A;
+  --primary: #8B5CF6;
+  --primary-glow: rgba(139, 92, 246, 0.15);
+  --secondary: #06B6D4;
+  --secondary-glow: rgba(6, 182, 212, 0.15);
+  --main-text: #F8FAFC;
+  --secondary-text: #CBD5E1;
+  --muted-text: #94A3B8;
+  --border-default: rgba(255, 255, 255, 0.1);
+  --accent: #06B6D4;
+  --glow-opacity: 0.35;
+  --neon-glow: rgba(139, 92, 246, 0.2);
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Semantic Theme Tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-elevated: var(--card-elevated);
+  --color-primary: var(--primary);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-secondary-glow: var(--secondary-glow);
+  --color-main-text: var(--main-text);
+  --color-secondary-text: var(--secondary-text);
+  --color-muted-text: var(--muted-text);
+  --color-border-default: var(--border-default);
+  --color-accent: var(--accent);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  background-image: radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 55%),
+                    radial-gradient(at 100% 0%, var(--secondary-glow) 0px, transparent 55%),
+                    radial-gradient(at 50% 100%, var(--primary-glow) 0px, transparent 60%);
+  color: var(--main-text);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Premium tactile feedback & styles */
+.premium-card {
+  background: var(--card);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: var(--main-text);
+}
+
+.premium-card:hover {
+  transform: translateY(-3px) scale(1.002);
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px -4px var(--primary-glow), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Tactile scale-down response for press events */
+.tactile-button {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tactile-button:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+.tactile-button:active {
+  transform: translateY(1px) scale(0.95);
+}
+
+/* Beautiful tactile selector transitions */
+.tactile-selector {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.tactile-selector:hover {
+  transform: scale(1.015);
+  background-color: var(--card-elevated);
+}
+.tactile-selector:active {
+  transform: scale(0.97);
+}
+
+/* Elegant premium highlight active state indicator border */
+.premium-active-indicator {
+  position: relative;
+}
+.premium-active-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 9999px;
+  box-shadow: 0 2px 10px var(--primary-glow);
+  animation: slide-in-bar 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slide-in-bar {
+  from { width: 0%; left: 50%; right: 50%; }
+  to { width: 80%; left: 10%; right: 10%; }
+}
+
+/* Premium micro-shadow highlights for selectors */
+.fancy-tab-active {
+  background: var(--card);
+  box-shadow: 0 4px 14px -3px var(--primary-glow);
+  border-color: var(--primary) !important;
+}
+
+/* Stylish animated glows */
+.glow-border {
+  position: relative;
+}
+.glow-border::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary));
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.glow-border:hover::before {
+  opacity: var(--glow-opacity);
+}
+
+/* Customized interactive inputs */
+.premium-input {
+  background-color: var(--card);
+  border: 1.5px solid var(--border-default);
+  color: var(--main-text);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-input::placeholder {
+  color: var(--muted-text);
+  opacity: 0.8;
+}
+
+.premium-input:focus {
+  background-color: var(--card);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+  outline: none;
+}
+
+/* Custom interactive selectors button style */
+.interactive-tab {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.interactive-tab:active {
+  transform: scale(0.96);
+}
+
+/* Custom minimal scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-text);
+}
+
+/* =========================================
+   Neural Aurora Theme variants (Unifying legacy theme selections)
+   ========================================= */
+
+.theme-normal,
+.theme-nordic,
+.theme-sunset,
+.theme-nebula,
+.theme-neon {
+  transition: all 0.4s ease;
+}
+
+/* Animated theme background glow shift */
+@keyframes fluid-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.theme-animated {
+  background: linear-gradient(-45deg, var(--background), var(--card-elevated), var(--primary-glow), var(--secondary-glow));
+  background-size: 400% 400%;
+  animation: fluid-glow 18s ease infinite;
+  transition: all 0.4s ease;
+}
+
+.theme-animated .premium-card {
+  background: rgba(var(--card), 0.6);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-default);
+}
+
+/* Ensure no override leaks for other themes */
+.theme-neon .premium-card,
+.theme-nordic .premium-card,
+.theme-sunset .premium-card,
+.theme-nebula .premium-card {
+  background: var(--card) !important;
+  border-color: var(--border-default) !important;
+  color: var(--main-text) !important;
+}
+
+.theme-neon .premium-input,
+.theme-nordic .premium-input,
+.theme-sunset .premium-input,
+.theme-nebula .premium-input {
+  background-color: var(--card) !important;
+  border-color: var(--border-default) !important;
+  color: var(--main-text) !important;
+}
+
+/* Companion, shimmer & pulse animations */
+.sweep-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.sweep-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; 
+  left: -150%; 
+  width: 60%; 
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: skewX(-25deg);
+  animation: sweep-light 6.5s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes sweep-light {
+  0% { left: -150%; }
+  35% { left: 150%; }
+  100% { left: 150%; }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3.6s ease-in-out infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 10px 25px -5px var(--primary-glow);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 35px -8px var(--primary-glow);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+

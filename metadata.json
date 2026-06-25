@@ -1,0 +1,10 @@
+{
+  "name": "Mitr Proactive",
+  "description": "Your proactive AI personal companion that saves your future before deadlines arrive, featuring autonomous daily planning, conversational morning briefings, and future risk prediction.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
