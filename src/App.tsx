@@ -367,7 +367,6 @@ export default function App() {
             </div>
             <div className="text-xs truncate max-w-[155px]">
               <span className="text-slate-100 font-bold block truncate">{currentUser?.name || 'User'}</span>
-              <span className="text-slate-400 block font-mono text-[10px] truncate">{currentUser?.email || 'user@mitr.ai'}</span>
             </div>
           </div>
           
