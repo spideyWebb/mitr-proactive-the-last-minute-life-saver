@@ -20,6 +20,11 @@ export interface Task {
   aiSchedules?: string[]; // Recommended visual windows
   isAIPrioritized?: boolean;
   aiRationale?: string;
+  reminderEmail?: string;
+  reminderTime?: string;
+  reminderTimestamp?: number;
+  reminderSent?: boolean;
+  timezoneOffset?: string;
 }
 
 export interface Habit {

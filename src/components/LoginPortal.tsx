@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Brain, Eye, EyeOff, CheckCircle2, User, Mail, Shield, AlertCircle, ArrowRight } from 'lucide-react';
+import { Sparkles, Clock, Eye, EyeOff, CheckCircle2, User, Mail, Shield, AlertCircle, ArrowRight } from 'lucide-react';
 
 interface LoginPortalProps {
   onLogin: (user: { email: string; name: string; avatar: string; role: string }) => void;
@@ -13,9 +13,9 @@ const ROLE_PRESETS = ['Developer', 'Designer', 'Student', 'Creator', 'Focus Spec
 
 export default function LoginPortal({ onLogin, appTheme, themeGradientClass, themeShadowClass }: LoginPortalProps) {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('sk6481580@gmail.com');
+  const [email, setEmail] = useState('user@example.com');
   const [password, setPassword] = useState('mitr123');
-  const [name, setName] = useState('SK Pro');
+  const [name, setName] = useState('Productive Mind');
   const [role, setRole] = useState('Developer');
   const [avatar, setAvatar] = useState('🚀');
   const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +67,7 @@ export default function LoginPortal({ onLogin, appTheme, themeGradientClass, the
       setIsSubmitting(false);
       onLogin({
         email,
-        name: isSignUp ? name : (email === 'sk6481580@gmail.com' ? 'SK Pro' : email.split('@')[0]),
+        name: isSignUp ? name : (email === 'user@example.com' ? 'Productive Mind' : email.split('@')[0]),
         avatar: isSignUp ? avatar : '🧠',
         role: isSignUp ? role : 'Focus Specialist'
       });
@@ -79,8 +79,8 @@ export default function LoginPortal({ onLogin, appTheme, themeGradientClass, the
     setTimeout(() => {
       setIsSubmitting(false);
       onLogin({
-        email: 'sk6481580@gmail.com',
-        name: 'SK Pro',
+        email: 'user@example.com',
+        name: 'Productive Mind',
         avatar: '🚀',
         role: 'Full Stack Dev'
       });
@@ -99,7 +99,7 @@ export default function LoginPortal({ onLogin, appTheme, themeGradientClass, the
         {/* Brand visual header */}
         <div className="text-center mb-8 space-y-2">
           <div className="inline-flex items-center justify-center p-4 rounded-3xl bg-card border border-border-default text-primary shadow-xl animate-bounce-slow mb-3">
-            <Brain className="w-10 h-10 text-primary" />
+            <Clock className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-3xl font-display font-black tracking-tight text-main-text flex items-center justify-center gap-2">
             Mitr <span className="text-primary">Proactive</span>
@@ -358,15 +358,15 @@ export default function LoginPortal({ onLogin, appTheme, themeGradientClass, the
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {/* Primary Account Option */}
                     <button
-                      onClick={() => handleGoogleLoginSelect('sk6481580@gmail.com', 'SK Pro')}
+                      onClick={() => handleGoogleLoginSelect('user@example.com', 'Productive Mind')}
                       className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 transition-all text-left group cursor-pointer"
                     >
                       <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950/80 flex items-center justify-center font-bold text-lg text-indigo-600 dark:text-indigo-300 uppercase">
-                        S
+                        P
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">SK Pro</p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">sk6481580@gmail.com</p>
+                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Productive Mind</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">user@example.com</p>
                       </div>
                       <div className="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50 px-2 py-0.5 rounded-md font-bold">
                         Active

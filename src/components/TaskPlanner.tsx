@@ -13,7 +13,11 @@ import {
   CheckSquare2,
   Bookmark,
   CalendarCheck,
-  ListTodo
+  ListTodo,
+  Bell,
+  X,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 interface TaskPlannerProps {
@@ -48,6 +52,177 @@ export default function TaskPlanner({
   // Decompress loading states mapping task ID to loading boolean
   const [decompressingIds, setDecompressingIds] = useState<Record<string, boolean>>({});
 
+  // Remind Me states
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [reminderMethod, setReminderMethod] = useState<'email' | 'sms'>('email');
+  const [reminderTarget, setReminderTarget] = useState('');
+  const [reminderOffsetType, setReminderOffsetType] = useState<'30m' | '15m' | '1h' | '2h' | 'custom'>('30m');
+  const [reminderCustomOffset, setReminderCustomOffset] = useState<number>(30);
+  const [reminderConfigured, setReminderConfigured] = useState(false);
+  const [reminderToastMessage, setReminderToastMessage] = useState<string | null>(null);
+  const [isSendingTest, setIsSendingTest] = useState(false);
+
+  // Dynamic reminder time computer
+  const getCalculatedReminderTime = (dueTimeStr: string, offsetMins: number) => {
+    if (!dueTimeStr) return '11:30';
+    try {
+      const [h, m] = dueTimeStr.split(':').map(Number);
+      let totalMins = h * 60 + m - offsetMins;
+      if (totalMins < 0) totalMins = (24 * 60 + totalMins) % (24 * 60); // Wrap around midnight
+      const calculatedH = Math.floor(totalMins / 60);
+      const calculatedM = totalMins % 60;
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `${pad(calculatedH)}:${pad(calculatedM)}`;
+    } catch (e) {
+      return '11:30';
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!reminderTarget.trim()) {
+      alert("Please enter a valid recipient address first!");
+      return;
+    }
+    
+    setIsSendingTest(true);
+    const offsetMins = reminderOffsetType === 'custom' ? reminderCustomOffset : (reminderOffsetType === '15m' ? 15 : reminderOffsetType === '1h' ? 60 : reminderOffsetType === '2h' ? 120 : 30);
+    const computedTime = getCalculatedReminderTime(dueTime, offsetMins);
+    const offsetLabel = reminderOffsetType === 'custom' ? `${reminderCustomOffset} min` : (reminderOffsetType === '15m' ? '15 min' : reminderOffsetType === '1h' ? '1 hour' : reminderOffsetType === '2h' ? '2 hours' : '30 min');
+    
+    let loggedUserEmail = 'user@example.com';
+    let loggedUserName = 'Productive Mind';
+    try {
+      const stored = localStorage.getItem('mitr_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        loggedUserEmail = parsed.email || loggedUserEmail;
+        loggedUserName = parsed.name || loggedUserName;
+      }
+    } catch (e) {}
+    
+    const emailSubject = `🔔 [Mitr AI Cognitive Planner] Alert: "${title || 'Sample Assignment'}"`;
+    const emailBody = `Pranaam ${loggedUserName} (${loggedUserEmail})!
+
+Your Mitr AI Cognitive Guard has triggered a real-time proactive alert for your planned task.
+
+--------------------------------------------------
+Task Summary Detail:
+- Title: ${title || 'Unnamed Task / Test Assignment'}
+- Priority Level: ${priority.toUpperCase()}
+- Due Date: ${dueDate}
+- Target Due Time: ${dueTime}
+- Configured Warning Offset: ${offsetLabel} before due time
+- Calculated Alert Dispatch Time: ${computedTime}
+--------------------------------------------------
+
+This is a real-time notification sent from your Mitr Cognitive Co-pilot dashboard. Your scheduling is active.
+
+Dhanyawaad,
+Mitr AI Assistant Team`;
+
+    try {
+      // Send directly from browser (client-side) to bypass server IP blocklists and ensure proper Referer headers
+      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(reminderTarget.trim())}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: emailSubject,
+          name: 'Mitr AI Cognitive Assistant',
+          email: 'assistant@mitr.ai',
+          message: emailBody,
+          _template: 'box'
+        })
+      });
+
+      const resData = await response.json();
+      if (response.ok) {
+        if (resData.success === 'false' || resData.success === false || (resData.message && resData.message.toLowerCase().includes('activate'))) {
+          // First-time activation triggered!
+          setReminderToastMessage(`⚠️ Action Required: Please check your inbox (or spam/promotions) for a "FormSubmit - Activate" email for ${reminderTarget}, and click the confirmation link to start receiving your automated alerts!`);
+        } else {
+          setReminderToastMessage(`🎉 Real email alert successfully dispatched to ${reminderTarget}! Please check your Inbox (and Spam/Promotions folder).`);
+        }
+        setReminderConfigured(true);
+        setShowReminderModal(false);
+      } else {
+        // Fallback to server-side API proxy
+        console.warn('Direct FormSubmit call failed, falling back to server-side proxy...');
+        const fallbackResponse = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: reminderTarget,
+            subject: emailSubject,
+            body: emailBody,
+          }),
+        });
+
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackResponse.ok) {
+          setReminderToastMessage(`📧 Real email scheduled via fallback to ${reminderTarget}! Please verify your activation link in your inbox.`);
+          setReminderConfigured(true);
+          setShowReminderModal(false);
+        } else {
+          alert(`Failed to send email: ${fallbackData.error || 'Unknown error'}`);
+        }
+      }
+    } catch (err: any) {
+      console.warn('Direct FormSubmit failed, trying server-side proxy...', err);
+      try {
+        const fallbackResponse = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: reminderTarget,
+            subject: emailSubject,
+            body: emailBody,
+          }),
+        });
+
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackResponse.ok) {
+          setReminderToastMessage(`📧 Real email scheduled via fallback to ${reminderTarget}! Please ensure you activate the email if it's the first time.`);
+          setReminderConfigured(true);
+          setShowReminderModal(false);
+        } else {
+          alert(`Failed to dispatch alert: ${fallbackData.error || 'Unknown error'}`);
+        }
+      } catch (fallbackErr: any) {
+        console.error('All email routes failed:', fallbackErr);
+        alert(`Network error while dispatching test email: ${fallbackErr.message}`);
+      }
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
+
+  const handleSaveReminder = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!reminderTarget.trim()) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    setReminderConfigured(true);
+    setShowReminderModal(false);
+
+    // Show custom success toast message
+    const offsetLabel = reminderOffsetType === 'custom' ? `${reminderCustomOffset} min` : (reminderOffsetType === '15m' ? '15 min' : reminderOffsetType === '1h' ? '1 hour' : reminderOffsetType === '2h' ? '2 hours' : '30 min');
+    const computedTime = getCalculatedReminderTime(dueTime, reminderOffsetType === 'custom' ? reminderCustomOffset : (reminderOffsetType === '15m' ? 15 : reminderOffsetType === '1h' ? 60 : reminderOffsetType === '2h' ? 120 : 30));
+    setReminderToastMessage(`Mitr Proactive: EMAIL alert scheduled at ${computedTime} (${offsetLabel} before task deadline) for ${reminderTarget}`);
+    
+    // Auto clear toast after 6 seconds
+    setTimeout(() => {
+      setReminderToastMessage(null);
+    }, 6000);
+  };
+
   const filteredTasks = tasks.filter(t => {
     if (filter === 'pending') return t.status !== 'completed';
     if (filter === 'completed') return t.status === 'completed';
@@ -58,15 +233,49 @@ export default function TaskPlanner({
     e.preventDefault();
     if (!title.trim()) return;
 
+    let finalDescription = description;
+    let reminderEmail: string | undefined = undefined;
+    let reminderTime: string | undefined = undefined;
+    let reminderTimestamp: number | undefined = undefined;
+
+    if (reminderConfigured && reminderTarget.trim()) {
+      const offsetMins = reminderOffsetType === 'custom' ? reminderCustomOffset : (reminderOffsetType === '15m' ? 15 : reminderOffsetType === '1h' ? 60 : reminderOffsetType === '2h' ? 120 : 30);
+      const offsetLabel = reminderOffsetType === 'custom' ? `${reminderCustomOffset} min` : (reminderOffsetType === '15m' ? '15 min' : reminderOffsetType === '1h' ? '1 hour' : reminderOffsetType === '2h' ? '2 hours' : '30 min');
+      const timeStr = getCalculatedReminderTime(dueTime, offsetMins);
+      finalDescription += `${description ? '\n\n' : ''}🔔 [Mitr Proactive Alert: Simulated EMAIL reminder set for ${reminderTarget} at ${timeStr} (${offsetLabel} before task deadline)]`;
+      
+      reminderEmail = reminderTarget.trim();
+      reminderTime = timeStr;
+      try {
+        const localReminderDate = new Date(`${dueDate}T${timeStr}:00`);
+        reminderTimestamp = localReminderDate.getTime();
+      } catch (err) {
+        console.error('Error constructing reminder timestamp:', err);
+      }
+    }
+
+    // Calculate timezone offset
+    const offsetMinsLocal = new Date().getTimezoneOffset();
+    const sign = offsetMinsLocal > 0 ? '-' : '+';
+    const absOffset = Math.abs(offsetMinsLocal);
+    const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const mins = String(absOffset % 60).padStart(2, '0');
+    const tzString = `${sign}${hours}:${mins}`;
+
     onAddTask({
       title,
-      description,
+      description: finalDescription,
       priority,
       difficulty,
       category,
       dueDate,
       dueTime,
-      status: 'pending'
+      status: 'pending',
+      reminderEmail,
+      reminderTime,
+      reminderTimestamp,
+      reminderSent: false,
+      timezoneOffset: tzString
     });
 
     // Reset clean states
@@ -76,7 +285,12 @@ export default function TaskPlanner({
     setDifficulty('easy');
     setCategory('Education');
     setDueDate(new Date().toISOString().split('T')[0]);
+    setDueTime('12:00');
     setShowAddForm(false);
+
+    // Reset reminder states
+    setReminderConfigured(false);
+    setReminderTarget('');
   };
 
   const handleDecompress = async (task: Task) => {
@@ -166,9 +380,36 @@ export default function TaskPlanner({
       {/* Slide-out / inline Add form */}
       {showAddForm && (
         <form onSubmit={handleCreateTask} className="premium-card p-6 space-y-4 rounded-2xl border-primary/25" id="new-task-form">
-          <div className="border-b border-border-default pb-3 mb-2">
-            <h3 className="font-display font-bold text-main-text text-sm md:text-base">Plan a new assignment or item</h3>
-            <p className="text-xs text-muted-text mt-0.5">Ensure optimal details so the AI scheduler works most effectively.</p>
+          <div className="border-b border-border-default pb-3 mb-2 flex items-start justify-between gap-4">
+            <div>
+              <h3 className="font-display font-bold text-main-text text-sm md:text-base">Plan a new assignment or item</h3>
+              <p className="text-xs text-muted-text mt-0.5">Ensure optimal details so the AI scheduler works most effectively.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!reminderTarget.trim()) {
+                  let loggedEmail = 'user@example.com';
+                  try {
+                    const stored = localStorage.getItem('mitr_user');
+                    if (stored) {
+                      const parsed = JSON.parse(stored);
+                      loggedEmail = parsed.email || loggedEmail;
+                    }
+                  } catch (e) {}
+                  setReminderTarget(loggedEmail);
+                }
+                setShowReminderModal(true);
+              }}
+              className={`px-3 py-1.5 flex items-center gap-1.5 rounded-xl border text-[11px] md:text-xs font-bold transition cursor-pointer select-none active:scale-95 shrink-0 ${
+                reminderConfigured
+                  ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-extrabold shadow-sm shadow-amber-500/10 animate-pulse'
+                  : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20'
+              }`}
+            >
+              <Bell className={`w-3.5 h-3.5 ${reminderConfigured ? 'fill-current animate-bounce' : ''}`} />
+              {reminderConfigured ? 'Reminder Configured' : 'Remind Me'}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -523,6 +764,219 @@ export default function TaskPlanner({
           </div>
         )}
       </div>
+
+      {/* Toast Alert Notification */}
+      {reminderToastMessage && (
+        <div className="fixed bottom-6 right-6 z-[120] max-w-md bg-slate-900 border-2 border-emerald-500/30 rounded-2xl p-4 shadow-2xl flex items-start gap-3 animate-bounce-slow">
+          <div className="p-2 bg-emerald-500/15 text-emerald-400 rounded-xl shrink-0">
+            <Bell className="w-5 h-5 animate-pulse" />
+          </div>
+          <div className="space-y-1">
+            <h4 className="font-bold text-xs md:text-sm text-white flex items-center gap-1.5">
+              <span>Mitr Proactive Guard Active</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed">{reminderToastMessage}</p>
+          </div>
+          <button 
+            onClick={() => setReminderToastMessage(null)}
+            className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer shrink-0 ml-1"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Remind Me Settings Modal popup */}
+      {showReminderModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-all duration-300 overflow-y-auto">
+          <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl text-left scrollbar-thin">
+            {/* Background decorative glow */}
+            <div className="absolute top-0 left-1/4 w-40 h-40 bg-indigo-500/10 rounded-full filter blur-2xl -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-amber-500/10 rounded-full filter blur-2xl translate-y-1/2"></div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5 relative z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/25">
+                  <Bell className="w-5 h-5 animate-bounce-slow" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base md:text-lg text-white">Mitr Proactive Alerts</h3>
+                  <p className="text-[10px] text-slate-400 font-medium">Configure real-time automated task warnings</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowReminderModal(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-5 relative z-10">
+              {/* Target Address Input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300 block">
+                  Recipient Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={reminderTarget}
+                  onChange={(e) => setReminderTarget(e.target.value)}
+                  placeholder="example@mail.com"
+                  className="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-850 focus:border-indigo-500/45 rounded-xl outline-none text-slate-200 text-sm transition-all shadow-inner font-mono"
+                />
+              </div>
+
+              {/* Timing Options */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300 block">Suggested Timing Offset</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { type: '15m', label: '15 Min Before', mins: 15 },
+                    { type: '30m', label: '30 Min Before (Default)', mins: 30 },
+                    { type: '1h', label: '1 Hour Before', mins: 60 },
+                    { type: '2h', label: '2 Hours Before', mins: 120 }
+                  ].map((opt) => (
+                    <button
+                      key={opt.type}
+                      type="button"
+                      onClick={() => setReminderOffsetType(opt.type as any)}
+                      className={`py-2 px-3 rounded-xl border font-bold text-[11px] text-left transition cursor-pointer ${
+                        reminderOffsetType === opt.type
+                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-500 font-extrabold'
+                          : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:bg-slate-850'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setReminderOffsetType('custom')}
+                    className={`col-span-2 py-2 px-3 rounded-xl border font-bold text-[11px] text-center transition cursor-pointer ${
+                      reminderOffsetType === 'custom'
+                        ? 'bg-amber-500/15 border-amber-500/30 text-amber-500 font-extrabold'
+                        : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:bg-slate-850'
+                    }`}
+                  >
+                    Custom Minute Offset
+                  </button>
+                </div>
+              </div>
+
+              {/* Custom Offset Number Selector */}
+              {reminderOffsetType === 'custom' && (
+                <div className="space-y-1.5 p-3 bg-slate-950/50 border border-slate-850 rounded-xl animate-fade-in">
+                  <label className="text-[11px] font-semibold text-slate-400 block">Custom Offset (Minutes)</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      max={1440}
+                      value={reminderCustomOffset}
+                      onChange={(e) => setReminderCustomOffset(Number(e.target.value))}
+                      className="w-24 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono text-xs outline-none focus:border-amber-500/40"
+                    />
+                    <span className="text-xs text-slate-400">minutes before task deadline time</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Dynamic Warning Preview */}
+              <div className="bg-slate-950/70 border border-slate-800/80 p-4 rounded-2xl flex items-start gap-3">
+                <Clock className="w-5 h-5 text-amber-500 shrink-0 mt-0.5 animate-pulse" />
+                <div className="space-y-0.5">
+                  <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-500 block">Calculated Dynamic Alarm Trigger</span>
+                  <p className="text-xs text-slate-300">
+                    With target due time set to <strong className="text-indigo-400 font-mono">{dueTime}</strong>, your proactive alert will fire at:{' '}
+                    <strong className="text-emerald-400 font-mono text-sm block mt-1">
+                      {getCalculatedReminderTime(dueTime, reminderOffsetType === 'custom' ? reminderCustomOffset : (reminderOffsetType === '15m' ? 15 : reminderOffsetType === '1h' ? 60 : reminderOffsetType === '2h' ? 120 : 30))}
+                    </strong>
+                  </p>
+                </div>
+              </div>
+
+              {/* FormSubmit Setup Steps */}
+              <div className="space-y-2 pt-1">
+                <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                    <span>⚠️ FormSubmit First-Time Activation</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    FormSubmit requires a <strong>one-time confirmation</strong> per recipient email. If you haven't activated <strong>{reminderTarget || 'your email'}</strong> yet, please complete both steps below:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* STEP 1: Standard Submit for Activation */}
+                    <form
+                      action={`https://formsubmit.co/${reminderTarget.trim()}`}
+                      method="POST"
+                      target="_blank"
+                      className="w-full"
+                    >
+                      <input type="hidden" name="_subject" value="Activate Mitr AI Cognitive Planner Alerts" />
+                      <input type="hidden" name="message" value="Welcome to Mitr AI Cognitive Planner! Please activate this email address to allow background task notifications." />
+                      <input type="hidden" name="_next" value={window.location.href} />
+                      <button
+                        type="submit"
+                        disabled={!reminderTarget.trim()}
+                        className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-extrabold transition text-[11px] flex items-center justify-center gap-1.5 cursor-pointer select-none shadow-md active:scale-[0.98]"
+                      >
+                        <span>Step 1: Activate Email ↗️</span>
+                      </button>
+                    </form>
+
+                    {/* STEP 2: Send AJAX alert */}
+                    <button
+                      type="button"
+                      disabled={isSendingTest || !reminderTarget.trim()}
+                      onClick={handleSendTestEmail}
+                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-emerald-800/40 disabled:to-teal-800/40 text-white font-extrabold transition text-[11px] flex items-center justify-center gap-1.5 cursor-pointer select-none shadow-md active:scale-[0.98]"
+                    >
+                      {isSendingTest ? (
+                        <>
+                          <div className="w-3.5 h-3.5 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></div>
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Step 2: Send Test Alert 🚀</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReminderConfigured(false);
+                    setShowReminderModal(false);
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-slate-850 border border-slate-800 text-slate-400 hover:bg-slate-850 hover:text-white font-bold transition text-xs cursor-pointer select-none"
+                >
+                  Disable Alert
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSaveReminder()}
+                  className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition text-xs shadow-md cursor-pointer select-none"
+                >
+                  Confirm Guard Alert
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

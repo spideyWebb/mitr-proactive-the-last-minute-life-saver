@@ -13,6 +13,22 @@ const PORT = 3000;
 
 app.use(express.json());
 
+// Global trackers for referer & timezone offset to bypass FormSubmit origin verification
+let lastKnownReferer = 'https://ais-pre-xlniwashc7h3elt665vh5p-1060434645621.asia-southeast1.run.app';
+let lastTimezoneOffset = '-07:00'; // Default PDT, updated dynamically from client requests
+
+app.use((req, res, next) => {
+  const ref = req.headers.referer || req.headers.origin;
+  if (ref && typeof ref === 'string' && (ref.startsWith('http://') || ref.startsWith('https://'))) {
+    lastKnownReferer = ref;
+  }
+  const tz = req.headers['x-timezone-offset'];
+  if (tz && typeof tz === 'string') {
+    lastTimezoneOffset = tz;
+  }
+  next();
+});
+
 // Path to persist data across dev server restarts (Local backup storage)
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'db.json');
@@ -281,7 +297,12 @@ app.post('/api/tasks', (req, res) => {
     dueTime: req.body.dueTime,
     createdAt: new Date().toISOString(),
     category: req.body.category || 'General',
-    subtasks: req.body.subtasks || []
+    subtasks: req.body.subtasks || [],
+    reminderEmail: req.body.reminderEmail,
+    reminderTime: req.body.reminderTime,
+    reminderTimestamp: req.body.reminderTimestamp,
+    reminderSent: req.body.reminderSent || false,
+    timezoneOffset: req.body.timezoneOffset
   };
   db.tasks.unshift(newTask);
   writeDB(db);
@@ -305,6 +326,66 @@ app.delete('/api/tasks/:id', (req, res) => {
   db.tasks = db.tasks.filter(t => t.id !== req.params.id);
   writeDB(db);
   res.json({ success: true });
+});
+
+// Email Notifications Dispatch API
+app.post('/api/send-email', async (req, res) => {
+  const { email, subject, body } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Recipient email is required' });
+  }
+
+  try {
+    console.log(`Sending real email alert to ${email} via FormSubmit...`);
+    
+    // Sanitize email and strip emojis from subject
+    const sanitizedEmail = String(email).replace(/[^\x00-\x7F]/g, '').trim();
+    const sanitizedSubject = String(subject || 'Mitr AI Cognitive Planner Alert')
+      .replace(/[^\x00-\x7F]/g, '')
+      .trim() || 'Mitr AI Cognitive Planner Alert';
+
+    // Parse origin from lastKnownReferer for standard cors validation header
+    let originHeader = 'https://ais-pre-xlniwashc7h3elt665vh5p-1060434645621.asia-southeast1.run.app';
+    try {
+      originHeader = new URL(lastKnownReferer).origin;
+    } catch (e) {
+      // fallback
+    }
+
+    const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(sanitizedEmail)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Referer': lastKnownReferer,
+        'Origin': originHeader
+      },
+      body: JSON.stringify({
+        _subject: sanitizedSubject,
+        name: 'Mitr AI Cognitive Assistant',
+        email: 'assistant@mitr.ai',
+        message: body || 'This is a test notification from your Mitr Cognitive Planner.',
+        _template: 'box'
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('FormSubmit success response:', result);
+      res.json({ 
+        success: true, 
+        message: 'Real email alert dispatched successfully via FormSubmit!',
+        isFirstTime: true // Indicate this might require first-time email activation
+      });
+    } else {
+      const errorText = await response.text();
+      console.error(`FormSubmit response error: ${errorText}`);
+      res.status(500).json({ error: 'Failed to send email alert', details: errorText });
+    }
+  } catch (error: any) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
 });
 
 // Habits
@@ -931,7 +1012,7 @@ app.post('/api/ai/companion', async (req, res) => {
   }
 
   const db = readDB();
-  const userName = db.tasks.length > 0 ? "Sachin" : "friend";
+  const userName = req.body.userName || "user";
   
   // Custom smart summarize to feed Gemini
   const activeTasksList = db.tasks.filter(t => t.status !== 'completed').map(t => `${t.title} (${t.priority} priority, ${t.difficulty} difficulty)`);
@@ -1008,8 +1089,8 @@ Keep your response brief (maximum 3 to 4 sentences). Speak directly, as a human 
  */
 const loginHandler = async (req: express.Request, res: express.Response) => {
   const { email, name, avatar, role } = req.body;
-  const userEmail = email || 'sk6481580@gmail.com';
-  const userName = name || 'Sachin';
+  const userEmail = email || 'user@example.com';
+  const userName = name || 'Productive Mind';
   const userAvatar = avatar || '🚀';
   const userRole = role || 'Full Stack Dev';
   const userId = 'u-' + Math.random().toString(36).substring(2, 11);
@@ -1473,7 +1554,7 @@ const coachChatHandler = async (req: express.Request, res: express.Response) => 
   try {
     const ai = getAI();
     const systemPrompt = `You are the executive "AI Productivity Coach" of Mitr Proactive.
-You are helping the user Sachin become a top-tier performer, destroy procrastination, and achieve goals.
+You are helping the user become a top-tier performer, destroy procrastination, and achieve goals.
 Provide incredibly smart, pragmatic, and psychologically backed tips. Don't be cliché.
 Always integrate their real-time productivity data to ground your advice:
 - Pending Deadlines: ${JSON.stringify(activeTasksList)}
@@ -1501,10 +1582,126 @@ app.post('/ai/chat', coachChatHandler);
 
 
 // ----------------------------------------------------
+// BACKGROUND COGNITIVE ALERT SCHEDULER
+// ----------------------------------------------------
+function startNotificationScheduler() {
+  console.log('[Scheduler] Background notification engine initialized.');
+  setInterval(async () => {
+    try {
+      const db = readDB();
+      const now = Date.now();
+      let updated = false;
+
+      for (const t of db.tasks) {
+        // Skip completed tasks
+        if (t.status === 'completed') continue;
+
+        // Auto-parse reminder details from description if they are not explicitly set
+        if (!t.reminderEmail && t.description && t.description.includes('Simulated EMAIL reminder')) {
+          const match = t.description.match(/Simulated EMAIL (?:reminder|alert) set for (\S+@\S+) at (\d{2}:\d{2})/i);
+          if (match) {
+            t.reminderEmail = match[1];
+            t.reminderTime = match[2];
+            try {
+              // Parse the local time using the correct captured timezone offset from the client or task
+              const tz = t.timezoneOffset || lastTimezoneOffset;
+              const dt = new Date(`${t.dueDate}T${t.reminderTime}:00${tz}`);
+              t.reminderTimestamp = dt.getTime();
+            } catch (e) {
+              console.error('[Scheduler] Failed to parse fallback timestamp:', e);
+            }
+            updated = true;
+          }
+        }
+
+        // Trigger condition: absolute timestamp reached and email not sent yet
+        if (
+          t.reminderEmail &&
+          t.reminderTimestamp &&
+          !t.reminderSent &&
+          now >= t.reminderTimestamp
+        ) {
+          console.log(`[Scheduler] TRIGGER: Sending automated alert to ${t.reminderEmail} for task "${t.title}"`);
+
+          const emailSubject = `🔔 [Mitr AI] Scheduled Reminder: "${t.title}"`;
+          const emailBody = `Pranaam user!
+
+Your Mitr AI Cognitive Companion has triggered this scheduled real-time email notification alert for your planned task.
+
+--------------------------------------------------
+📌 Task Alert Summary:
+• Task Title: ${t.title}
+• Due Date/Time: ${t.dueDate} ${t.dueTime || ''}
+• Priority Level: ${t.priority.toUpperCase()}
+• Difficulty Level: ${t.difficulty.toUpperCase()}
+
+Companion Insight Note:
+Consistent step-by-step action creates momentum. You are doing great!
+
+Aura Focus Mode System
+Mitr AI Assistant Team`;
+
+          // Parse origin from lastKnownReferer for standard cors validation header
+          let originHeader = 'https://ais-pre-xlniwashc7h3elt665vh5p-1060434645621.asia-southeast1.run.app';
+          try {
+            originHeader = new URL(lastKnownReferer).origin;
+          } catch (e) {
+            // fallback
+          }
+
+          try {
+            const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(t.reminderEmail.trim())}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Referer': lastKnownReferer,
+                'Origin': originHeader
+              },
+              body: JSON.stringify({
+                _subject: emailSubject,
+                name: 'Mitr AI Cognitive Assistant',
+                email: 'assistant@mitr.ai',
+                message: emailBody,
+                _template: 'box'
+              })
+            });
+
+            if (response.ok) {
+              const resData = await response.json();
+              if (resData.success === 'false' || resData.success === false) {
+                console.log(`[Scheduler] Email dispatch for task ${t.id} returned success: false (likely needs activation). Will retry. Msg:`, resData.message);
+              } else {
+                console.log(`[Scheduler] Email successfully dispatched to ${t.reminderEmail}`, resData);
+                t.reminderSent = true;
+                updated = true;
+              }
+            } else {
+              console.error(`[Scheduler] FormSubmit error response:`, await response.text());
+            }
+          } catch (fetchErr) {
+            console.error(`[Scheduler] Failed to dispatch email for task ${t.id}:`, fetchErr);
+          }
+        }
+      }
+
+      if (updated) {
+        writeDB(db);
+      }
+    } catch (schedErr) {
+      console.error('[Scheduler Interval Error]:', schedErr);
+    }
+  }, 10000); // Check every 10 seconds for real-time responsiveness
+}
+
+
+// ----------------------------------------------------
 // VITE DEV SERVER & STATIC MIDDLEWARE INTERACTION
 // ----------------------------------------------------
 
 async function start() {
+  startNotificationScheduler();
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },

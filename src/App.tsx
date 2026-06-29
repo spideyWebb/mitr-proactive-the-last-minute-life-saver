@@ -7,9 +7,9 @@ import HabitTracker from './components/HabitTracker';
 import VoiceAssistant from './components/VoiceAssistant';
 import LoginPortal from './components/LoginPortal';
 import MitrCompanion from './components/MitrCompanion';
+
 import { 
   Sparkles, 
-  Brain, 
   ListTodo, 
   TrendingUp, 
   Calendar, 
@@ -54,7 +54,7 @@ export default function App() {
     if (stored) {
       try { return JSON.parse(stored); } catch (_) {}
     }
-    return { email: 'sk6481580@gmail.com', name: 'SK Pro', avatar: '🚀', role: 'Full Stack Dev' };
+    return { email: 'user@example.com', name: 'Productive Mind', avatar: '🚀', role: 'Full Stack Dev' };
   });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('mitr_logged_in') !== 'false';
@@ -292,11 +292,11 @@ export default function App() {
           {/* Logo brand */}
           <div className="p-6 border-b border-slate-900/60 flex items-center gap-3">
             <div className={`p-2.5 bg-indigo-600 text-white rounded-2xl shadow-md transition-all duration-300`}>
-              <Brain className="w-5 h-5 animate-pulse" />
+              <Clock className="w-5 h-5 animate-pulse" />
             </div>
             <div>
               <h1 className="text-white font-display font-bold leading-none tracking-tight text-base">Mitr Proactive</h1>
-              <span className="text-[9px] text-indigo-400 font-mono tracking-widest uppercase font-extrabold block mt-0.5">Jira & Teams Hub</span>
+              <span className="text-[9px] text-indigo-400 font-mono tracking-widest uppercase font-extrabold block mt-0.5">Prioritize Smarter. Achieve More.</span>
             </div>
           </div>
 
@@ -310,7 +310,7 @@ export default function App() {
                   : 'hover:bg-slate-900 text-slate-400 hover:text-slate-100'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" /> Comprehensive Dashboard
+              <LayoutDashboard className="w-4 h-4" /> Home
             </button>
 
             <button
@@ -414,7 +414,7 @@ export default function App() {
               )}
             </button>
 
-            <span className="hidden sm:inline text-[11px] text-slate-400 font-medium">Sachin's Private Board</span>
+            <span className="hidden sm:inline text-[11px] text-slate-400 font-medium">{currentUser?.name || 'User'}'s Workspace Board</span>
           </div>
         </header>
 

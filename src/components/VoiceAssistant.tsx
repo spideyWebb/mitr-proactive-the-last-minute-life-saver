@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mic, Send, Sparkles, Brain, Loader, MessageCircle, MicOff } from 'lucide-react';
+import { Mic, Send, Sparkles, Clock, Loader, MessageCircle, MicOff } from 'lucide-react';
 import { VoiceReframeResult } from '../types';
 
 interface VoiceAssistantProps {
@@ -134,7 +134,7 @@ export default function VoiceAssistant({ onRefreshData, activeTab, setActiveTab 
       <div className="bg-slate-950 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400">
-            <Brain className="w-5 h-5 animate-pulse" />
+            <Clock className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <h3 className="text-white font-medium text-sm md:text-base">Mitr - Proactive Voice Companion</h3>

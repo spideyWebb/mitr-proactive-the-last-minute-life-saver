@@ -10,7 +10,6 @@ import {
   ArrowRight,
   RefreshCw,
   Award,
-  Brain,
   Clock,
   Check,
   Flame,
@@ -22,6 +21,8 @@ import {
   Play,
   RotateCcw,
   Undo2,
+  X,
+  Pause,
   ChevronRight,
   FolderDot,
   MessageSquarePlus
@@ -63,9 +64,68 @@ export default function Dashboard({
   setActiveTab,
   isDarkMode
 }: DashboardProps) {
+  let loggedUserName = 'Productive Mind';
+  try {
+    const stored = localStorage.getItem('mitr_user');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      loggedUserName = parsed.name || loggedUserName;
+    }
+  } catch (e) {}
+
   // WhatsApp task parser states
   const [whatsappInput, setWhatsappInput] = useState("");
   const [whatsappStatus, setWhatsappStatus] = useState<string | null>(null);
+
+  // Stopwatch states for In Progress tasks
+  const [activeStopwatchTaskId, setActiveStopwatchTaskId] = useState<string | null>(null);
+  const [stopwatchTimeMs, setStopwatchTimeMs] = useState<number>(0);
+  const [stopwatchIsRunning, setStopwatchIsRunning] = useState<boolean>(false);
+  const [showStopwatchModal, setShowStopwatchModal] = useState<boolean>(false);
+
+  // Format milliseconds to MM:SS.CC or HH:MM:SS.CC
+  const formatStopwatchTime = (timeMs: number) => {
+    const totalSeconds = Math.floor(timeMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const centiseconds = Math.floor((timeMs % 1000) / 10);
+
+    const pad = (num: number) => String(num).padStart(2, '0');
+    
+    if (hours > 0) {
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(centiseconds)}`;
+    }
+    return `${pad(minutes)}:${pad(seconds)}.${pad(centiseconds)}`;
+  };
+
+  // Run stopwatch interval
+  useEffect(() => {
+    let interval: any = null;
+    if (stopwatchIsRunning && activeStopwatchTaskId) {
+      interval = setInterval(() => {
+        setStopwatchTimeMs(prev => prev + 100);
+      }, 100);
+    } else {
+      if (interval) clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [stopwatchIsRunning, activeStopwatchTaskId]);
+
+  // Pause/Stop stopwatch if the task is no longer in progress
+  useEffect(() => {
+    if (activeStopwatchTaskId) {
+      const activeTask = tasks.find(t => t.id === activeStopwatchTaskId);
+      if (!activeTask || activeTask.status !== 'in_progress') {
+        setStopwatchIsRunning(false);
+      }
+    }
+  }, [tasks, activeStopwatchTaskId]);
+
+  // Find the active task tracked by the stopwatch
+  const stopwatchTask = activeStopwatchTaskId ? tasks.find(t => t.id === activeStopwatchTaskId) : null;
 
   const parseWhatsAppTask = (text: string) => {
     const title = text.trim();
@@ -308,7 +368,7 @@ export default function Dashboard({
           </div>
  
           <h2 className="text-2xl md:text-3.5xl font-extrabold tracking-tight leading-tight text-main-text">
-            Namaste Sachin! <span className="text-secondary-text font-normal">Aaj kya phodna hai? Here is your daily briefing:</span>
+            Namaste {loggedUserName}! <span className="text-secondary-text font-normal">Aaj kya phodna hai? Here is your daily briefing:</span>
           </h2>
  
           <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-3`}>
@@ -349,7 +409,7 @@ export default function Dashboard({
                 </>
               ) : (
                 <>
-                  <Brain className="w-3.5 h-3.5 fill-current animate-pulse" />
+                  <Clock className="w-3.5 h-3.5 animate-pulse" />
                   Prioritize Workspace
                 </>
               )}
@@ -382,7 +442,7 @@ export default function Dashboard({
           </div>
           <div>
             <h3 className="font-display font-extrabold text-sm md:text-base text-main-text flex items-center gap-2">
-              WhatsApp-style Instant Task Creator
+              Instant task creator
               <span className="text-[9px] font-mono tracking-widest bg-indigo-50/80 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-100/50 dark:border-indigo-500/20 px-2.5 py-0.5 rounded-md font-bold uppercase shadow-[0_1px_2px_rgba(99,102,241,0.03)]">PRO</span>
             </h3>
             <p className="text-xs text-secondary-text mt-0.5">
@@ -399,7 +459,7 @@ export default function Dashboard({
             if (parsed) {
               onAddTask(parsed);
               setWhatsappInput("");
-              setWhatsappStatus(`✨ Naya Task create ho gaya Sachin! "${parsed.title}" [Priority: ${parsed.priority.toUpperCase()}, Category: ${parsed.category}, Due: ${parsed.dueDate}]`);
+              setWhatsappStatus(`✨ Naya Task create ho gaya ${loggedUserName}! "${parsed.title}" [Priority: ${parsed.priority.toUpperCase()}, Category: ${parsed.category}, Due: ${parsed.dueDate}]`);
               setTimeout(() => setWhatsappStatus(null), 5000);
             }
           }
@@ -510,7 +570,7 @@ export default function Dashboard({
           <div>
             <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
               <FolderDot className="w-5 h-5 text-indigo-500" />
-              Interactive Jira Task Workflow
+              Task workflow
             </h3>
             <p className="text-xs text-muted-text mt-0.5">
               Manage your tasks visually. Transition items between columns to reflect progress.
@@ -617,6 +677,24 @@ export default function Dashboard({
                       <span>📅 {task.dueDate}</span>
                       
                       <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            if (activeStopwatchTaskId !== task.id) {
+                              setActiveStopwatchTaskId(task.id);
+                              setStopwatchTimeMs(0);
+                            }
+                            setShowStopwatchModal(true);
+                          }}
+                          className={`px-2 py-1 flex items-center gap-1 cursor-pointer rounded-md border font-bold transition text-[10px] ${
+                            activeStopwatchTaskId === task.id
+                              ? 'bg-amber-500/15 border-amber-500/30 text-amber-500 hover:bg-amber-500/25'
+                              : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20'
+                          }`}
+                          title="Open Task Stopwatch"
+                        >
+                          <Clock className={`w-3 h-3 ${activeStopwatchTaskId === task.id && stopwatchIsRunning ? 'animate-spin-slow' : ''}`} />
+                          {activeStopwatchTaskId === task.id && stopwatchTimeMs > 0 ? formatStopwatchTime(stopwatchTimeMs) : 'Stopwatch'}
+                        </button>
                         <button
                           onClick={() => onUpdateTaskStatus(task.id, 'pending')}
                           className="px-2 py-1 bg-card border border-border-default hover:bg-card-elevated text-secondary-text rounded-md transition font-bold"
@@ -1002,6 +1080,138 @@ export default function Dashboard({
           </div>
         </div>
       </div>
+
+      {/* Mitr Focus Stopwatch Modal popup */}
+      {showStopwatchModal && stopwatchTask && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-all duration-300 overflow-y-auto">
+          <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-800 rounded-3xl p-5 md:p-7 shadow-2xl text-left scrollbar-thin">
+            {/* Background glowing effects */}
+            <div className="absolute top-0 left-1/4 w-40 h-40 bg-indigo-500/10 rounded-full filter blur-2xl -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-amber-500/10 rounded-full filter blur-2xl translate-y-1/2"></div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4 relative z-10">
+              <div className="flex items-center gap-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${stopwatchIsRunning ? 'bg-amber-500 animate-ping' : 'bg-slate-500'}`}></span>
+                <h3 className="font-display font-bold text-base md:text-lg text-white">Mitr Focus Stopwatch</h3>
+              </div>
+              <button 
+                onClick={() => setShowStopwatchModal(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Task Info Panel */}
+            <div className="bg-slate-950/50 border border-slate-800/60 p-3.5 rounded-2xl mb-5 relative z-10">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 uppercase font-mono tracking-wider border border-indigo-500/30">
+                {stopwatchTask.category}
+              </span>
+              <h4 className="font-bold text-sm md:text-base text-slate-100 mt-1.5 leading-snug">{stopwatchTask.title}</h4>
+              {stopwatchTask.description && (
+                <p className="text-xs text-slate-400 mt-1 line-clamp-2">{stopwatchTask.description}</p>
+              )}
+            </div>
+
+            {/* Animated Stopwatch Clock Graphic */}
+            <div className="flex flex-col items-center justify-center mb-5 relative z-10">
+              <div className="relative w-36 h-36 md:w-40 md:h-40 flex items-center justify-center mb-4">
+                {/* Glow ring */}
+                <div className={`absolute inset-0 rounded-full border-2 border-dashed transition-all duration-700 ${
+                  stopwatchIsRunning ? 'border-amber-500/40 animate-[spin_30s_linear_infinite] scale-105' : 'border-slate-800'
+                }`}></div>
+                
+                {/* Main Dial Outer */}
+                <div className="absolute inset-1.5 rounded-full bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-center">
+                  
+                  {/* Subtle dial markers */}
+                  <div className="absolute top-1.5 text-[9px] text-slate-600 font-mono font-bold">12</div>
+                  <div className="absolute right-3 text-[9px] text-slate-600 font-mono font-bold">15</div>
+                  <div className="absolute bottom-1.5 text-[9px] text-slate-600 font-mono font-bold">30</div>
+                  <div className="absolute left-3 text-[9px] text-slate-600 font-mono font-bold">45</div>
+
+                  {/* Dynamic rotating needle hand */}
+                  <div 
+                    className="absolute w-0.5 bg-gradient-to-t from-transparent via-amber-500 to-amber-400 origin-bottom rounded-full transition-transform duration-100 ease-linear"
+                    style={{ 
+                      height: '42%',
+                      bottom: '50%',
+                      transform: `rotate(${((stopwatchTimeMs / 1000) * 6) % 360}deg)` 
+                    }}
+                  />
+                  
+                  {/* Center pin */}
+                  <div className="absolute w-2.5 h-2.5 bg-amber-500 rounded-full shadow-md z-10 border border-slate-900"></div>
+                </div>
+              </div>
+
+              {/* Digital Timer Readout */}
+              <div className="text-center">
+                <span className="font-mono text-3xl md:text-4xl font-extrabold tracking-tight text-white select-all">
+                  {formatStopwatchTime(stopwatchTimeMs)}
+                </span>
+                <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">
+                  {stopwatchIsRunning ? 'Active Focus Session' : 'Session Paused'}
+                </p>
+              </div>
+            </div>
+
+            {/* Buttons Group */}
+            <div className="grid grid-cols-2 gap-3 relative z-10">
+              <button
+                onClick={() => setStopwatchIsRunning(!stopwatchIsRunning)}
+                className={`w-full py-3 px-4 rounded-2xl font-bold flex items-center justify-center gap-2 cursor-pointer transition text-xs md:text-sm ${
+                  stopwatchIsRunning 
+                    ? 'bg-amber-500/15 border border-amber-500/30 text-amber-500 hover:bg-amber-500/25'
+                    : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md'
+                }`}
+              >
+                {stopwatchIsRunning ? (
+                  <>
+                    <Pause className="w-4 h-4 fill-current" />
+                    Pause
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-current" />
+                    Start
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  setStopwatchIsRunning(false);
+                  setStopwatchTimeMs(0);
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 font-bold flex items-center justify-center gap-2 cursor-pointer transition text-xs md:text-sm"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </button>
+            </div>
+
+            {/* Finish action */}
+            <div className="mt-4 relative z-10 border-t border-slate-800/80 pt-4">
+              <button
+                onClick={() => {
+                  setStopwatchIsRunning(false);
+                  onUpdateTaskStatus(stopwatchTask.id, 'completed');
+                  setShowStopwatchModal(false);
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center justify-center gap-2 cursor-pointer transition text-xs md:text-sm shadow-md"
+              >
+                <Check className="w-4 h-4" />
+                Done & Finish Task
+              </button>
+              <p className="text-center text-[10px] text-slate-500 mt-2.5 font-medium">
+                Focus on your work. This stopwatch will keep tracking in the background.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

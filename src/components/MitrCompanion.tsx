@@ -80,7 +80,7 @@ export default function MitrCompanion({ isDarkMode, userName }: MitrCompanionPro
       const response = await fetch('/api/ai/companion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: textToSend, mood: mitrMood })
+        body: JSON.stringify({ message: textToSend, mood: mitrMood, userName })
       });
       const data = await response.json();
       
