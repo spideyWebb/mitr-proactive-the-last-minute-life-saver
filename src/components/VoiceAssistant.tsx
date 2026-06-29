@@ -129,7 +129,7 @@ export default function VoiceAssistant({ onRefreshData, activeTab, setActiveTab 
   ];
 
   return (
-    <div className="bg-card rounded-2xl border border-border-default shadow-sm overflow-hidden flex flex-col h-[500px]" id="voice-assistant-card">
+    <div className="bg-card rounded-2xl border border-border-default shadow-sm overflow-hidden flex flex-col h-[calc(100vh-14rem)] md:h-[550px] min-h-[420px]" id="voice-assistant-card">
       {/* Header */}
       <div className="bg-slate-950 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -150,7 +150,7 @@ export default function VoiceAssistant({ onRefreshData, activeTab, setActiveTab 
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-card-elevated min-h-[250px] scrollbar-thin">
+      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-card-elevated min-h-[150px] md:min-h-[250px] scrollbar-thin">
         {chatHistory.map((chat, idx) => (
           <div 
             key={idx} 

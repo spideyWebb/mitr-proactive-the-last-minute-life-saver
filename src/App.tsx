@@ -26,6 +26,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'habits' | 'calendar' | 'voice'>('dashboard');
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('mitr_dark_mode') !== 'false';
   });
@@ -399,7 +400,7 @@ export default function App() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 relative">
             {/* Elegant Sun/Moon Mode Switcher */}
             <button
               onClick={toggleDarkMode}
@@ -412,6 +413,51 @@ export default function App() {
                 <Moon className="w-4.5 h-4.5 text-indigo-600" />
               )}
             </button>
+
+            {/* User Profile Dropdown Button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 flex items-center justify-center font-bold text-base transition-all duration-200 cursor-pointer active:scale-95 shadow-xs"
+                title="User Profile Menu"
+              >
+                {currentUser?.avatar || '🧠'}
+              </button>
+
+              {showUserMenu && (
+                <>
+                  {/* Backdrop click closer */}
+                  <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)}></div>
+                  
+                  {/* Dropdown Card */}
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-xl z-50 p-4 space-y-3 animate-fade-in text-left">
+                    <div className="flex items-center gap-3 pb-2.5 border-b border-slate-100 dark:border-slate-900">
+                      <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-lg border border-slate-100 dark:border-slate-800">
+                        {currentUser?.avatar || '🧠'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">{currentUser?.name || 'User'}</span>
+                        <span className="text-[10px] text-slate-400 block truncate">{currentUser?.email || 'user@example.com'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="text-[10px] text-indigo-500 dark:text-indigo-400 font-mono font-bold tracking-wide">
+                      👤 {currentUser?.role || 'Focus Specialist'}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 py-2.5 px-3 rounded-xl flex items-center gap-2 cursor-pointer transition-all border border-rose-150 dark:border-rose-950/50 bg-rose-50/50 dark:bg-rose-950/10 text-left mt-1"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" /> Sign Out / Logout
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
             <span className="hidden sm:inline text-[11px] text-slate-400 font-medium">{currentUser?.name || 'User'}'s Workspace Board</span>
           </div>

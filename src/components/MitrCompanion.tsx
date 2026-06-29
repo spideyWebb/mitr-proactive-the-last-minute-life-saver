@@ -140,7 +140,7 @@ export default function MitrCompanion({ isDarkMode, userName }: MitrCompanionPro
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 font-sans" id="mitr-interactive-companion-widget">
+    <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 font-sans" id="mitr-interactive-companion-widget">
       
       {/* Floating Trigger Button */}
       {!isOpen && (
@@ -175,7 +175,7 @@ export default function MitrCompanion({ isDarkMode, userName }: MitrCompanionPro
 
       {/* Expanded Interactive Companion Dialogue Panel */}
       {isOpen && (
-        <div className="premium-card w-[calc(100vw-2.5rem)] sm:w-96 rounded-3xl overflow-hidden shadow-2xl border border-border-default flex flex-col h-[520px] bg-card animate-fade-in" id="expanded-mitr-panel">
+        <div className="premium-card w-[calc(100vw-2rem)] sm:w-96 rounded-3xl overflow-hidden shadow-2xl border border-border-default flex flex-col h-[440px] sm:h-[520px] max-h-[calc(100vh-11rem)] bg-card animate-fade-in" id="expanded-mitr-panel">
           
           {/* Companion header */}
           <div className="bg-card p-4 text-main-text flex items-center justify-between border-b border-border-default shrink-0">

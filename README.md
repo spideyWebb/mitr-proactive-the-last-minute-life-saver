@@ -6,7 +6,7 @@
 ---
 
 ## 🔗 Project Navigation
-* **Live Deployed Application**: [Mitr Proactive Live](${window.location.origin}) *(https://ais-pre-xlniwashc7h3elt665vh5p-1060434645621.asia-southeast1.run.app)*
+* **Live Deployed Application**: [Mitr Proactive Live](https://mitr-proactive-623260536781.asia-southeast1.run.app)
 * **Github Repository**: [mitr-proactive-the-last-minute-life-saver](https://github.com/spideyWebb/mitr-proactive-the-last-minute-life-saver)
 * **Project Documentation (Google Doc)**: `[Insert Your Shared Google Doc Link Here]`
 
