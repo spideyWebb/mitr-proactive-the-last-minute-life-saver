@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#0B0F17"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="600" cy="250" r="250" fill="url(#glow)"/>
+  
+  <!-- Sidebar -->
+  <rect width="200" height="500" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+  <text x="25" y="45" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="18">🌟 Mitr Proactive</text>
+  
+  <!-- Sidebar Links -->
+  <text x="25" y="95" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🏠 Home</text>
+  <text x="25" y="145" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🎯 Task Planner</text>
+  <text x="25" y="185" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🔥 Habit Tracker</text>
+  <text x="25" y="225" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">📅 Calendar</text>
+  
+  <rect x="10" y="245" width="180" height="35" rx="6" fill="#1E1B4B" stroke="#4F46E5" stroke-width="1"/>
+  <text x="25" y="268" fill="#818CF8" font-family="system-ui, sans-serif" font-size="14" font-weight="600">💬 Mitr Companion</text>
+  
+  <text x="25" y="315" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🎙️ Voice Assistant</text>
+
+  <!-- Chat Content -->
+  <!-- Chat Header -->
+  <rect x="220" y="20" width="560" height="55" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="52" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="16">🧠 Mitr AI Companion Chat</text>
+  <circle cx="740" cy="48" r="6" fill="#10B981"/>
+  <text x="725" y="52" fill="#10B981" font-family="system-ui, sans-serif" font-size="11" text-anchor="end">Active Friend</text>
+
+  <!-- Message Log -->
+  <rect x="220" y="90" width="560" height="330" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Mitr Message 1 -->
+  <rect x="240" y="110" width="400" height="75" rx="10" fill="#1E1B4B" stroke="#4F46E5" stroke-width="0.5"/>
+  <text x="255" y="132" fill="#A7F3D0" font-family="system-ui, sans-serif" font-weight="bold" font-size="12">Mitr AI</text>
+  <text x="255" y="152" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">Arre SK Pro! Kaise ho yaar? Tension mat lo,</text>
+  <text x="255" y="170" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">main hamesha tumhere sath hoon. Aaj schedule banaye?</text>
+
+  <!-- User Message 1 -->
+  <rect x="360" y="200" width="400" height="60" rx="10" fill="#1E293B" stroke="#334155" stroke-width="0.5"/>
+  <text x="375" y="222" fill="#F3F4F6" font-family="system-ui, sans-serif" font-weight="bold" font-size="12">SK Pro (You)</text>
+  <text x="375" y="242" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">Haan bhai, Springboot deadline is coming. Very anxious.</text>
+
+  <!-- Mitr Message 2 -->
+  <rect x="240" y="275" width="400" height="80" rx="10" fill="#1E1B4B" stroke="#4F46E5" stroke-width="0.5"/>
+  <text x="255" y="297" fill="#A7F3D0" font-family="system-ui, sans-serif" font-weight="bold" font-size="12">Mitr AI</text>
+  <text x="255" y="317" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">I understand completely. Take a deep breath.</text>
+  <text x="255" y="335" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">Let's set your focus hours to 4 hours so I can optimize.</text>
+
+  <!-- Input Bar -->
+  <rect x="220" y="435" width="560" height="45" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="462" fill="#64748B" font-family="system-ui, sans-serif" font-size="13">Talk to Mitr... (e.g. "Main thak gaya hoon bhai")</text>
+  <rect x="730" y="443" width="40" height="28" rx="6" fill="#4F46E5"/>
+  <path d="M745 457 L755 452 L745 447 Z" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#0B0F17"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="600" cy="250" r="250" fill="url(#glow)"/>
+  
+  <!-- Sidebar -->
+  <rect width="200" height="500" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+  <text x="25" y="45" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="18">🌟 Mitr Proactive</text>
+  
+  <!-- Sidebar Links -->
+  <text x="25" y="95" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🏠 Home</text>
+  <text x="25" y="145" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🎯 Task Planner</text>
+  <text x="25" y="185" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🔥 Habit Tracker</text>
+  <text x="25" y="225" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">📅 Calendar</text>
+  <text x="25" y="265" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">💬 Mitr Companion</text>
+  
+  <rect x="10" y="285" width="180" height="35" rx="6" fill="#1E1B4B" stroke="#4F46E5" stroke-width="1"/>
+  <text x="25" y="308" fill="#818CF8" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🎙️ Voice Assistant</text>
+
+  <!-- Voice Assistant Page -->
+  <!-- Top Title -->
+  <rect x="220" y="20" width="560" height="55" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="52" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="16">🎙️ Voice Assistant &amp; Thought Re-Framer</text>
+
+  <!-- Waves Visualizer Block -->
+  <rect x="220" y="90" width="560" height="150" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+  <text x="380" y="125" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="12" font-weight="bold">🎙️ VOICE INPUT ACTIVE &amp; RECORDING</text>
+  
+  <!-- Waveform lines -->
+  <path d="M260 165 Q 290 135 320 165 T 380 165 T 440 165 T 500 165 T 560 165 T 620 165 T 680 165" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+  <path d="M260 165 Q 295 145 330 165 T 400 165 T 470 165 T 540 165 T 610 165 T 680 165" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-opacity="0.6"/>
+  <circle cx="480" cy="165" r="5" fill="#EF4444"/>
+
+  <!-- Venting Transcript -->
+  <rect x="220" y="255" width="560" height="95" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="280" fill="#FCA5A5" font-family="system-ui, sans-serif" font-weight="bold" font-size="12">🗣️ Your Venting (What you said)</text>
+  <text x="240" y="305" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">"I feel like I'm running behind on the Springboot project. If this fails,</text>
+  <text x="240" y="325" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">everyone will think I'm incompetent. I can't keep up..."</text>
+
+  <!-- Re-framed thought -->
+  <rect x="220" y="365" width="560" height="115" rx="10" fill="#1E3A8A" stroke="#3B82F6" stroke-width="1"/>
+  <text x="240" y="390" fill="#93C5FD" font-family="system-ui, sans-serif" font-weight="bold" font-size="12">🧠 CBT-Based Constructive Re-framing</text>
+  <text x="240" y="415" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13" font-style="italic">"It is normal to feel pressured by a deadline. You are taking proactive steps</text>
+  <text x="240" y="435" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">by planning available hours. A single project doesn't define your value,</text>
+  <text x="240" y="455" fill="#F1F5F9" font-family="system-ui, sans-serif" font-size="13">and you have successfully delivered complex tasks before. Let's start small."</text>
+</svg>

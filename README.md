@@ -16,11 +16,11 @@
 
 | 🏠 Home (Daily Timeline & Overview) | 💬 Mitr Companion Chat UI |
 | --- | --- |
-| <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="Dashboard" width="400"/> | <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=800&q=80" alt="Mitr Chat" width="400"/> |
+| <img src="assets/dashboard_screenshot.svg" alt="Dashboard" width="400"/> | <img src="assets/mitr_chat_screenshot.svg" alt="Mitr Chat" width="400"/> |
 
 | 🎯 Autonomous AI Scheduler | 🎙️ Voice Assistant & Mental Re-framing |
 | --- | --- |
-| <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80" alt="Autonomous Planner" width="400"/> | <img src="https://images.unsplash.com/photo-1610116306796-6ebd30d779c6?auto=format&fit=crop&w=800&q=80" alt="Voice Assistant" width="400"/> |
+| <img src="assets/scheduler_screenshot.svg" alt="Autonomous Planner" width="400"/> | <img src="assets/voice_assistant_screenshot.svg" alt="Voice Assistant" width="400"/> |
 
 *(Note: These high-fidelity visual assets are fully integrated and committed directly within the repository assets folder.)*
 

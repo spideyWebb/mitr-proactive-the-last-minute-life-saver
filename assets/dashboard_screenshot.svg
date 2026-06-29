@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#0B0F17"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#4F46E5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="600" cy="150" r="250" fill="url(#glow)"/>
+  
+  <!-- Sidebar -->
+  <rect width="200" height="500" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
+  <text x="25" y="45" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="18">🌟 Mitr Proactive</text>
+  
+  <!-- Sidebar Links -->
+  <rect x="10" y="75" width="180" height="35" rx="6" fill="#1E1B4B" stroke="#4F46E5" stroke-width="1"/>
+  <text x="25" y="98" fill="#818CF8" font-family="system-ui, sans-serif" font-size="14" font-weight="600">🏠 Home</text>
+  
+  <text x="25" y="145" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🎯 Task Planner</text>
+  <text x="25" y="185" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🔥 Habit Tracker</text>
+  <text x="25" y="225" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">📅 Calendar</text>
+  <text x="25" y="265" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">💬 Mitr Companion</text>
+  <text x="25" y="305" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="14">🎙️ Voice Assistant</text>
+
+  <!-- Main Content -->
+  <!-- Header Banner -->
+  <rect x="220" y="20" width="560" height="70" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="50" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="18">Namaste, SK Pro! 👋</text>
+  <text x="240" y="70" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="13">Let's defeat burnout and organize your daily timeline today.</text>
+
+  <!-- Slider Block -->
+  <rect x="220" y="105" width="360" height="110" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="135" fill="#F8FAFC" font-family="system-ui, sans-serif" font-weight="bold" font-size="14">Set Your Available Focus Hours</text>
+  
+  <!-- Slider Track -->
+  <rect x="240" y="165" width="320" height="6" rx="3" fill="#334155"/>
+  <rect x="240" y="165" width="180" height="6" rx="3" fill="#6366F1"/>
+  <circle cx="420" cy="168" r="8" fill="#F8FAFC" stroke="#6366F1" stroke-width="3"/>
+  <rect x="475" y="118" width="85" height="25" rx="5" fill="#4F46E5"/>
+  <text x="517" y="135" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">4.0 Hrs</text>
+
+  <!-- Risk Gauge Card -->
+  <rect x="595" y="105" width="185" height="110" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="687" y="128" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Burnout Risk</text>
+  <!-- Circular Gauge -->
+  <circle cx="687" cy="165" r="22" fill="none" stroke="#334155" stroke-width="5"/>
+  <circle cx="687" cy="165" r="22" fill="none" stroke="#10B981" stroke-width="5" stroke-dasharray="138" stroke-dashoffset="105"/>
+  <text x="687" y="170" fill="#10B981" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">15%</text>
+
+  <!-- Organized Timeline -->
+  <rect x="220" y="230" width="560" height="250" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="240" y="260" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold" font-size="15">Today's Optimized Timeline</text>
+  <line x1="240" y1="275" x2="760" y2="275" stroke="#334155" stroke-width="1"/>
+
+  <!-- Row 1 -->
+  <text x="240" y="305" fill="#818CF8" font-family="system-ui, sans-serif" font-weight="bold" font-size="13">09:00 AM</text>
+  <text x="330" y="305" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="13">Study Springboot dependencies</text>
+  <rect x="620" y="291" width="60" height="18" rx="4" fill="#FEF2F2"/>
+  <text x="650" y="304" fill="#EF4444" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">HIGH</text>
+  <rect x="695" y="291" width="65" height="18" rx="4" fill="#D1FAE5"/>
+  <text x="727" y="304" fill="#059669" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Allocated</text>
+
+  <!-- Row 2 -->
+  <text x="240" y="355" fill="#818CF8" font-family="system-ui, sans-serif" font-weight="bold" font-size="13">11:00 AM</text>
+  <text x="330" y="355" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="13">Exercise &amp; Meditation break</text>
+  <rect x="620" y="341" width="60" height="18" rx="4" fill="#F3F4F6"/>
+  <text x="650" y="354" fill="#4B5563" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">LOW</text>
+  <rect x="695" y="341" width="65" height="18" rx="4" fill="#D1FAE5"/>
+  <text x="727" y="354" fill="#059669" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Allocated</text>
+
+  <!-- Row 3 -->
+  <text x="240" y="405" fill="#818CF8" font-family="system-ui, sans-serif" font-weight="bold" font-size="13">02:00 PM</text>
+  <text x="330" y="405" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="13">Write Core API endpoints</text>
+  <rect x="620" y="391" width="60" height="18" rx="4" fill="#FFFBEB"/>
+  <text x="650" y="404" fill="#D97706" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">MEDIUM</text>
+  <rect x="695" y="391" width="65" height="18" rx="4" fill="#D1FAE5"/>
+  <text x="727" y="404" fill="#059669" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Allocated</text>
+</svg>
