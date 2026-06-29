@@ -22,7 +22,7 @@
 | --- | --- |
 | `<img src="./assets/scheduler_screenshot.png" alt="Autonomous Planner" width="400"/>` | `<img src="./assets/voice_assistant_screenshot.png" alt="Voice Assistant" width="400"/>` |
 
-*(Note: Please replace the image paths above with your actual repository screenshots, or upload images directly to your GitHub repo asset folder!)*
+*(Note: These high-fidelity visual assets are fully integrated and committed directly within the repository assets folder.)*
 
 ---
 
