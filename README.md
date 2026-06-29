@@ -14,7 +14,7 @@
 
 ## 📺 Application Screenshots
 
-| 🏠 Home Dashboard (Daily Timeline & Overview) | 💬 Mitr Companion Chat UI |
+| 🏠 Home (Daily Timeline & Overview) | 💬 Mitr Companion Chat UI |
 | --- | --- |
 | `<img src="./assets/dashboard_screenshot.png" alt="Dashboard" width="400"/>` | `<img src="./assets/mitr_chat_screenshot.png" alt="Mitr Chat" width="400"/>` |
 
@@ -28,8 +28,8 @@
 
 ## 🧩 Key Features
 
-### 1. 💬 WhatsApp-like Intuitive Task Input
-* **Natural Language Scheduling**: No complex form clicks. Simply type tasks in plain, natural language (e.g., `"Study Springboot dependencies tomorrow high priority wellness"`) directly in a polished WhatsApp-style chat bar.
+### 1. 💬 Instant Task Creator
+* **Natural Language Scheduling**: No complex form clicks. Simply type tasks in plain, natural language (e.g., `"Study Springboot dependencies tomorrow high priority wellness"`) directly in a polished chat bar.
 * **Smart Parsing**: The background AI parses the text, extracts the intent, category (wellness, study, work), deadline, and sets the priority instantly.
 
 ### 2. ⏳ Autonomous AI Daily Planner (Volume-style Time Allocation)
