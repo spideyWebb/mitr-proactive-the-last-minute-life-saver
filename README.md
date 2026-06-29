@@ -46,7 +46,15 @@
 ### 5. 🎙️ Voice Assistant & Thought Re-framer
 * **Cognitive Behavioral Therapy (CBT) Companion**: Speak directly into your microphone to vent. The AI Voice Assistant synthesizes the thoughts and reframes negative self-talk into constructive, uplifting perspectives.
 
-### 6. 🔄 Hybrid Simulated Auth Portal with Google Sign-In
+### 6. 🔔 Proactive Reminders & Email Alerts (Mitr Alert Engine)
+* **Automated Email Notifications**: Set specific reminder time offsets (e.g., 15 mins, 30 mins, 1 hour, or custom duration) before any task's due deadline.
+* **Proactive Delivery**: The built-in backend scheduler tracks active reminder timestamps and securely delivers high-priority simulated/real email notifications to the logged-in user's email address when the threshold is hit.
+
+### 7. ⏱️ Active Focus Timer & Stopwatch (Pomodoro Mode)
+* **High-Fidelity Visual Dial**: Includes an elegant digital-and-analog hybrid stopwatch dial styled with premium rotating needle hands, custom markers, and dynamic pulse-glow rings.
+* **Focus Tracker**: Start, pause, and reset your active study/work sessions directly from the home dashboard to maximize flow state and track focused time block by block.
+
+### 8. 🔄 Hybrid Simulated Auth Portal with Google Sign-In
 * **One-Click Google Sign-In**: Offers a seamless Google Accounts Chooser modal that simulates OAuth login flow—perfect for high-fidelity interactive presentations and smooth testing.
 
 ---
